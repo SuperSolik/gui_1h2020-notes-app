@@ -6,7 +6,7 @@ create table if not exists snotebooks(
 create table if not exists notes(
     id integer primary key,
     name varchar(255),
-    content text
+    content text,
     date datetime
 );
 
