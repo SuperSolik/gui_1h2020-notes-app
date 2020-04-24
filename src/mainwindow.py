@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 
-from src.ui.mainwindow_ui import Ui_MainWindow  # импорт нашего сгенерированного файла
+from src.ui.mainwindow_ui import Ui_MainWindow
 
 
 class MainWindow(QtWidgets.QMainWindow):
