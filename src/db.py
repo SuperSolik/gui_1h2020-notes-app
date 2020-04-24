@@ -8,12 +8,14 @@ from typing import Dict, Tuple, List
 conn = sqlite3.connect(os.getenv("DEV_NOTE_DB"))
 cursor = conn.cursor()
 
+
 def rows_to_dict(cols: Tuple[str], rows: List[Tuple]):
     result = []
     for row in rows:
         dict_row = dict(zip(cols, row))
         result.append(dict_row)
     return result
+
 
 def insert(table: str, column_values: Dict):
     columns = ', '.join(column_values.keys())
@@ -25,6 +27,7 @@ def insert(table: str, column_values: Dict):
         f"values ({placeholders})",
         values)
     conn.commit()
+
 
 def update(table: str, row_id: int, column_values: Dict):
     row_id = int(row_id)
@@ -38,23 +41,27 @@ def update(table: str, row_id: int, column_values: Dict):
         values)
     conn.commit()
 
+
 def fetchall(table: str, columns: Tuple[str]) -> List[Dict]:
     columns_joined = ", ".join(columns)
     cursor.execute(f"select {columns_joined} from {table}")
     rows = cursor.fetchall()
     return rows_to_dict(columns, rows)
 
+
 def delete(table: str, row_id: int) -> None:
     row_id = int(row_id)
     cursor.execute(f"delete from {table} where id={row_id}")
     conn.commit()
 
+
 def check_connection():
     cursor.execute(
-            "select name from sqlite_master "
-            "where type='table' and name='notes'")
+        "select name from sqlite_master "
+        "where type='table' and name='notes'")
     table_exists = cursor.fetchall()
     if not table_exists:
         sys.exit('Connection to db failed')
+
 
 check_connection()
