@@ -35,19 +35,19 @@
     </property>
     <item>
      <widget class="QWidget" name="widget_3" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,12">
        <item>
         <widget class="QWidget" name="widget_4" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="addNoteBtn">
             <property name="text">
              <string>+</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="addLabel">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -64,7 +64,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget">
+        <widget class="QListWidget" name="labelsListWidget">
          <property name="font">
           <font>
            <pointsize>13</pointsize>
@@ -111,26 +111,6 @@
          <property name="isWrapping" stdset="0">
           <bool>false</bool>
          </property>
-         <item>
-          <property name="text">
-           <string>Favourites</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>All notes</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>label1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>label2</string>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>
@@ -138,9 +118,9 @@
     </item>
     <item>
      <widget class="QWidget" name="widget_2" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,12">
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="notesLabel">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
@@ -149,12 +129,12 @@
           </font>
          </property>
          <property name="text">
-          <string>Current label</string>
+          <string/>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget_2">
+        <widget class="QListWidget" name="notesListWidget">
          <property name="font">
           <font>
            <pointsize>13</pointsize>
@@ -198,26 +178,6 @@
          <property name="selectionMode">
           <enum>QAbstractItemView::NoSelection</enum>
          </property>
-         <item>
-          <property name="text">
-           <string>note1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>note2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>noteN</string>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>
@@ -228,18 +188,18 @@
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,10">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="5,1,1,1">
          <item>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="titlEdit">
            <property name="text">
             <string>Input title</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="favCheckBox">
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
@@ -249,14 +209,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="noteActionBtn">
            <property name="text">
             <string>Render/Edit</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="editLabelsBtn">
            <property name="text">
             <string>Edit labels</string>
            </property>
@@ -265,7 +225,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QTextEdit" name="textEdit"/>
+        <widget class="QWidget" name="noteWidget" native="true"/>
        </item>
       </layout>
      </widget>
