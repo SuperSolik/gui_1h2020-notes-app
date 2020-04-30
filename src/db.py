@@ -3,10 +3,12 @@ import sqlite3
 import sys
 from typing import Dict, Tuple, List
 
+from src.shared.singleton import SingletonMeta
+
 
 # DEV_NOTE_DB needs to be set before app usage
 # export DEV_NOTE_DB=<path to db>
-class Database:
+class Database(metaclass=SingletonMeta):
     def __init__(self):
         self.conn = sqlite3.connect(os.getenv("DEV_NOTE_DB"))
         self.cursor = self.conn.cursor()
@@ -16,23 +18,25 @@ class Database:
         self.conn.close()
 
     @staticmethod
-    def rows_to_dict(cols: Tuple[str], rows: List[Tuple]) -> List[Dict]:
+    def rows_to_dict(cols: Tuple[str], rows: List[Tuple]) -> List:
         result = []
         for row in rows:
             dict_row = dict(zip(cols, row))
             result.append(dict_row)
         return result
 
-    def insert(self, table: str, column_values: Dict) -> None:
+    def insert(self, table: str, column_values: Dict) -> int:
         columns = ', '.join(column_values.keys())
-        values = [tuple(column_values.values())]
         placeholders = ', '.join('?' * len(column_values.keys()))
-        self.cursor.executemany(
+
+        self.cursor.execute(
             f"insert into {table} "
             f"({columns}) "
             f"values ({placeholders})",
-            values)
-        conn.commit()
+            list(column_values.values()))
+        self.conn.commit()
+
+        return self.cursor.lastrowid
 
     def update(self, table: str, row_id: int, column_values: Dict) -> None:
         row_id = int(row_id)
@@ -44,18 +48,18 @@ class Database:
             f"{placeholders} "
             f"where id={row_id}",
             values)
-        conn.commit()
+        self.conn.commit()
 
-    def fetchall(self, table: str, columns: Tuple[str]) -> List[Dict]:
+    def fetchall(self, table: str, columns: Tuple[str, ...]) -> List:
         columns_joined = ", ".join(columns)
         self.cursor.execute(f"select {columns_joined} from {table}")
         rows = self.cursor.fetchall()
-        return rows_to_dict(columns, rows)
+        return Database.rows_to_dict(columns, rows)
 
     def delete(self, table: str, row_id: int) -> None:
         row_id = int(row_id)
         self.cursor.execute(f"delete from {table} where id={row_id}")
-        conn.commit()
+        self.conn.commit()
 
     def check_connection(self) -> None:
         self.cursor.execute(
