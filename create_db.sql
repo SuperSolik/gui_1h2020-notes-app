@@ -7,7 +7,7 @@ create table if not exists notes(
     id integer primary key,
     name varchar(255),
     content text,
-    date datetime
+    date timestamp default current_timestamp
 );
 
 create table if not exists relation(

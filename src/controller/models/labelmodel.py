@@ -1,28 +1,29 @@
 from dataclasses import dataclass
-from typing import List
+from functools import partial
+from typing import Iterable
 
 from src.controller.models.model import Model
-from src.db import Database
 
 
 @dataclass
 class Label:
-    id: int
     name: str
+    id: int = None
 
 
 class LabelModel(Model):
     def __init__(self):
         super().__init__()
-        self.db = Database()
 
-    def get(self) -> List[Label]:
-        return self.db.fetchall('labels', ('id', 'name'))
+    def get(self) -> Iterable[Label]:
+        return map(lambda dict_label: Label(name=dict_label['name'], id=dict_label['id']),
+                   self.db.fetchall('labels', ('id', 'name')))
 
-    def save(self, name: str, id: int = None) -> Label:
+    def save(self, label: Label) -> Label:
+        action = partial(self.db.update, 'labels', label.id) if label.id else partial(self.db.insert, 'labels')
         return Label(
-            name=name,
-            id=self.db.update('labels', id, {'name': name}) if id else self.db.insert('labels', {'name': name}),
+            name=label.name,
+            id=action({'name': label.name}),
         )
 
     def delete(self, id: int) -> None:
