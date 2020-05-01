@@ -2,12 +2,10 @@ from typing import List
 
 from src.controller.models.labelmodel import LabelModel, Label
 from src.db import Database
-from src.interfaces.iview import IView
 
 
 class Controller:
-    def __init__(self, view: IView):
-        self.view = view
+    def __init__(self):
         self.db = Database()
         self.labels = LabelModel()
 
