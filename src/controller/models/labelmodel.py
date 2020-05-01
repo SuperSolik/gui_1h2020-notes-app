@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Tuple
 
 from src.controller.models.model import Model
 from src.db import Database
@@ -16,8 +16,9 @@ class LabelModel(Model):
         super().__init__()
         self.db = Database()
 
-    def get(self) -> List[Label]:
-        return self.db.fetchall('labels', ('id', 'name'))
+    def get(self) -> Tuple[Label]:
+        dict_labels = self.db.fetchall('labels', ('id', 'name'))
+        return tuple(map(lambda label: Label(**label), dict_labels))
 
     def save(self, name: str, id: int = None) -> Label:
         return Label(
