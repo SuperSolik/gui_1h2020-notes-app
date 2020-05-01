@@ -1,5 +1,3 @@
-from abc import ABC
-
 from PyQt5 import QtWidgets
 
 from src.controller import Controller
@@ -12,5 +10,4 @@ class MainWindow(QtWidgets.QMainWindow, IView):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         self.controller = Controller(self)
