@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import List
-from recordclass import RecordClass
 
 from src.controller.models.model import Model
 from src.db import Database
 
 
-class Label(RecordClass):
+@dataclass
+class Label:
     id: int
     name: str
 
