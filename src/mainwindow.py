@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QListWidgetItem, QInputDialog
 
 from src.controller import Controller
+from src.controller.models.labelmodel import Label
 from src.ui.mainwindow_ui import Ui_MainWindow
 
 
@@ -40,7 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_label(self):
         text, ok = QInputDialog.getText(None, 'Dialog', 'Input label name:')
         if ok:
-            self.controller.create_label(text)
+            self.controller.save_label(Label(text))
         self.update_labels()
 
     def delete_label(self):
