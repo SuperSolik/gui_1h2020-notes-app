@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import sys
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Iterable, TypedDict, Any
 
 from src.shared.singleton import SingletonMeta
 
@@ -18,7 +18,7 @@ class Database(metaclass=SingletonMeta):
         self.conn.close()
 
     @staticmethod
-    def rows_to_dict(cols: Tuple[str], rows: List[Tuple]) -> List:
+    def rows_to_dict(cols: Iterable[str], rows: List[Tuple]) -> List:
         result = []
         for row in rows:
             dict_row = dict(zip(cols, row))
@@ -38,6 +38,17 @@ class Database(metaclass=SingletonMeta):
 
         return self.cursor.lastrowid
 
+    def insert_many(self, table: str, columns_keys: Tuple[str], column_values: Iterable[Tuple]) -> None:
+        columns = ', '.join(columns_keys)
+        values = list(column_values)
+        placeholders = ', '.join('?' * len(columns_keys))
+        self.cursor.executemany(
+            f"insert into {table} "
+            f"({columns}) "
+            f"values ({placeholders})",
+            values)
+        self.conn.commit()
+
     def update(self, table: str, row_id: int, column_values: Dict) -> None:
         row_id = int(row_id)
         raw_placeholders = map(lambda col: f"{col} = ?", column_values.keys())
@@ -50,9 +61,12 @@ class Database(metaclass=SingletonMeta):
             values)
         self.conn.commit()
 
-    def fetchall(self, table: str, columns: Tuple[str, ...]) -> List:
-        columns_joined = ", ".join(columns)
-        self.cursor.execute(f"select {columns_joined} from {table}")
+    def select(self, table: str, columns: Iterable[str], **kwargs) -> List[Dict[str, Any]]:
+        columns_joined = ', '.join(columns)
+        joins_query = ' '.join(map(lambda join: f'inner join {join[0]} on {join[1]}', kwargs.get('joins', [])))
+        condition = kwargs['where'] if 'where' in kwargs else None
+        self.cursor.execute(f'select {columns_joined} from {table} '
+                            f'{joins_query} ' + (f'where {condition}' if condition else ''))
         rows = self.cursor.fetchall()
         return Database.rows_to_dict(columns, rows)
 

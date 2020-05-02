@@ -1,9 +1,10 @@
+from src.db import Database
 from src.shared.singleton import SingletonMeta
 
 
 class Model(metaclass=SingletonMeta):
     def __init__(self):
-        self.entities = []
+        self.db = Database()
 
     def save(self, *args, **kwargs):
         pass
