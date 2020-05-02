@@ -1,6 +1,6 @@
 from dataclasses import dataclass
+from typing import Tuple
 from functools import partial
-from typing import Iterable
 
 from src.controller.models.model import Model
 
@@ -15,9 +15,9 @@ class LabelModel(Model):
     def __init__(self):
         super().__init__()
 
-    def get(self) -> Iterable[Label]:
-        return map(lambda dict_label: Label(name=dict_label['name'], id=dict_label['id']),
-                   self.db.fetchall('labels', ('id', 'name')))
+    def get(self) -> Tuple[Label]:
+        dict_labels = self.db.fetchall('labels', ('id', 'name'))
+        return tuple(map(lambda label: Label(**label), dict_labels))
 
     def save(self, label: Label) -> Label:
         action = partial(self.db.update, 'labels', label.id) if label.id else partial(self.db.insert, 'labels')
