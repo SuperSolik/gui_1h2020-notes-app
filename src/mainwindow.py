@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QListWidgetItem, QInputDialog
 
 from src.controller import Controller
 from src.controller.models.labelmodel import Label
+from src.notewidget import NoteWidget
 from src.ui.mainwindow_ui import Ui_MainWindow
 
 
@@ -13,6 +14,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(1024, 600)
         self.controller = Controller()
 
+        self.notes_widget = NoteWidget(parent=self)
+
         self.init_ui()
 
         self.update_labels()
@@ -20,6 +23,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def init_ui(self):
         self.ui.setupUi(self)
         self.resize(1024, 600)
+
+        self.ui.noteLayout.addWidget(self.notes_widget)
+        self.ui.noteLayout.setStretch(0, 2)
+        self.ui.noteLayout.setStretch(1, 10)
+
         self.ui.newNoteBtn.clicked.connect(self.create_note)
         self.ui.newLabelBtn.clicked.connect(self.create_label)
         self.ui.labelsListWidget.itemDoubleClicked.connect(self.label_clicked)
