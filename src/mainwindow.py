@@ -20,15 +20,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.update_labels()
 
+        self.note_btn = {}
+
     def init_ui(self):
         self.ui.setupUi(self)
         self.resize(1024, 600)
 
-        self.ui.noteLayout.addWidget(self.notes_widget)
-        self.ui.noteLayout.setStretch(0, 2)
-        self.ui.noteLayout.setStretch(1, 10)
+        self.ui.horizontalLayout.addWidget(self.notes_widget)
+        self.ui.horizontalLayout.setStretch(0, 2)
+        self.ui.horizontalLayout.setStretch(1, 3)
+        self.ui.horizontalLayout.setStretch(2, 8)
 
-        self.ui.newNoteBtn.clicked.connect(self.create_note)
         self.ui.newLabelBtn.clicked.connect(self.create_label)
         self.ui.labelsListWidget.itemDoubleClicked.connect(self.label_clicked)
         self.ui.deleteLabelBtn.clicked.connect(self.delete_label)
@@ -65,5 +67,6 @@ class MainWindow(QtWidgets.QMainWindow):
         pass
 
     def label_clicked(self, item: QListWidgetItem) -> None:
-        self.ui.notesLabel.setText(item.text())
+        # self.ui.notesLabel.setText(item.text())
         # TODO: fetching notes
+        pass
