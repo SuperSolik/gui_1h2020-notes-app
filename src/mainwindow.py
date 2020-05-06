@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QListWidgetItem, QInputDialog
 
 from src.controller import Controller
 from src.controller.models.labelmodel import Label
+from src.controller.models.notemodel import Note
 from src.notewidget import NoteWidget
 from src.ui.mainwindow_ui import Ui_MainWindow
 
@@ -34,6 +35,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.newLabelBtn.clicked.connect(self.create_label)
         self.ui.labelsListWidget.itemDoubleClicked.connect(self.label_clicked)
         self.ui.deleteLabelBtn.clicked.connect(self.delete_label)
+        self.notes_widget.note_created.connect(self.create_note)
+        self.notes_widget.note_saved.connect(self.save_note)
 
     def update_labels(self) -> None:
         labels = self.controller.get_labels()
@@ -64,7 +67,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_labels()
 
     def create_note(self):
-        pass
+        note = self.controller.save_note(Note(name="untiled", content=""))
+        self.notes_widget.set_note(note)
+
+    def save_note(self, note: Note):
+        self.controller.save_note(note)
 
     def label_clicked(self, item: QListWidgetItem) -> None:
         # self.ui.notesLabel.setText(item.text())

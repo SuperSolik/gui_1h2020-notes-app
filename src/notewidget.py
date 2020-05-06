@@ -1,7 +1,9 @@
 from enum import Enum
-
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLineEdit, QComboBox, QPushButton, \
     QTextEdit, QTextBrowser, QSpacerItem, QStackedWidget, QSizePolicy
+
+from src.controller.models.notemodel import Note
 
 
 class NoteState(Enum):
@@ -10,6 +12,9 @@ class NoteState(Enum):
 
 
 class NoteWidget(QWidget):
+    note_created = pyqtSignal()
+    note_saved = pyqtSignal(Note)
+
     def __init__(self, parent=None):
         super(QWidget, self).__init__(parent)
         self.main_layout = QVBoxLayout()
@@ -24,6 +29,8 @@ class NoteWidget(QWidget):
         self.note_widgets = QStackedWidget()
 
         self.state = NoteState.RENDER
+
+        self.note = None
 
         self.init_ui()
 
@@ -66,7 +73,9 @@ class NoteWidget(QWidget):
         self.main_layout.setSpacing(3)
         self.setLayout(self.main_layout)
 
-    def _change_state(self, num_state):
+        self.note_create_btn.clicked.connect(lambda: self.note_created.emit())
+
+    def _change_state(self, num_state: int):
         self.note_buttons.setCurrentIndex(num_state)
         self.note_widgets.setCurrentIndex(num_state)
 
@@ -77,3 +86,16 @@ class NoteWidget(QWidget):
     def render_note(self):
         self.state = NoteState.RENDER
         self._change_state(self.state.value)
+        text = self.note_widgets.widget(NoteState.EDIT.value).toMarkdown()
+        self.note_widgets.widget(NoteState.RENDER.value).setMarkdown(text)
+
+        self.note.name = self.title_edit.text().strip()
+        self.note.content = text
+
+        self.note_saved.emit(self.note)
+
+    def set_note(self, note: Note):
+        self.note = note
+        self.title_edit.setText(note.name)
+        self.note_widgets.widget(NoteState.EDIT.value).setText(note.content)
+        self.render_note()
