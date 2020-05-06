@@ -33,6 +33,7 @@ class NoteWidget(QWidget):
         self.note = None
 
         self.init_ui()
+        self.render_note()
 
     def init_ui(self):
         self.title_edit.setPlaceholderText('Note title')
@@ -81,18 +82,23 @@ class NoteWidget(QWidget):
 
     def edit_note(self):
         self.state = NoteState.EDIT
+        self.title_edit.setEnabled(True)
+
         self._change_state(self.state.value)
 
     def render_note(self):
         self.state = NoteState.RENDER
-        self._change_state(self.state.value)
+        self.title_edit.setDisabled(True)
+
         text = self.note_widgets.widget(NoteState.EDIT.value).toMarkdown()
         self.note_widgets.widget(NoteState.RENDER.value).setMarkdown(text)
 
-        self.note.name = self.title_edit.text().strip()
-        self.note.content = text
+        self._change_state(self.state.value)
 
-        self.note_saved.emit(self.note)
+        if self.note is not None:
+            self.note.name = self.title_edit.text().strip()
+            self.note.content = text
+            self.note_saved.emit(self.note)
 
     def set_note(self, note: Note):
         self.note = note
