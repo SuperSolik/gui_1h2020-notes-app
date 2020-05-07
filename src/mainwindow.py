@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QListWidgetItem, QInputDialog
 from src.controller import Controller
 from src.controller.models.labelmodel import Label
 from src.controller.models.notemodel import Note
+from src.notepreview import NotePreviewWidget
 from src.notewidget import NoteWidget
 from src.ui.mainwindow_ui import Ui_MainWindow
 
@@ -16,11 +17,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.controller = Controller()
         self.notesWidget = NoteWidget(parent=self)
+        self.cur_label_id = None
 
         self.init_ui()
 
         self.setWindowTitle('NOTE TAKING APP')
         self.update_labels()
+        self.fetch_notes()
 
     def init_ui(self):
         self.ui.setupUi(self)
@@ -44,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.labelsListWidget.clear()
         # first fake label, by clicking on it just fetch all notes
         item = QListWidgetItem("All notes")
-        setattr(item, 'id', -1)
+        setattr(item, 'id', None)
         self.ui.labelsListWidget.addItem(item)
 
         for label in labels:
@@ -70,14 +73,29 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_note(self):
         note = self.controller.save_note(Note(name="untitled", content=""))
         self.notesWidget.set_note(note)
+        self.fetch_notes(self.cur_label_id)
 
     def save_note(self, note: Note):
         self.controller.save_note(note)
+        self.fetch_notes(self.cur_label_id)
 
     def delete_note(self, note: Note):
         self.controller.delete_note(note.id)
+        self.fetch_notes(self.cur_label_id)
 
-    def label_clicked(self, item: QListWidgetItem) -> None:
-        # self.ui.notesLabel.setText(item.text())
-        # TODO: fetching notes
-        pass
+    def fetch_notes(self, label_id=None):
+        notes = self.controller.get_notes(label_id)
+        self.ui.notesListWidget.clear()
+        for note in notes:
+            note_preview = NotePreviewWidget(note, self)
+
+            note_preview.note_passed.connect(self.notesWidget.set_note)
+
+            item = QListWidgetItem()
+            item.setSizeHint(note_preview.minimumSizeHint())
+            self.ui.notesListWidget.addItem(item)
+            self.ui.notesListWidget.setItemWidget(item, note_preview)
+
+    def label_clicked(self, label_item: QListWidgetItem) -> None:
+        self.cur_label_id = label_item.id
+        self.fetch_notes(self.cur_label_id)

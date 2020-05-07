@@ -73,6 +73,6 @@ class NoteWidget(QWidget):
 
     def save_note(self):
         if self.note is not None:
-            self.note.name = self.ui.titleEdit.text()
-            self.note.content = self.textEdit.toMarkdown()
+            self.note.name = self.ui.titleEdit.text().strip()
+            self.note.content = self.textEdit.toMarkdown().strip()
             self.note_saved.emit(self.note)
