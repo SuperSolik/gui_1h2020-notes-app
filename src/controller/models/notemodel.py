@@ -54,6 +54,10 @@ class NoteModel(Model):
     def add_labels(self, note_id: int, label_ids: Iterable[int]) -> None:
         self.db.insert_many('relation', ('note_id', 'label_id'), zip(cycle([note_id]), label_ids))
 
+    def delete_labels(self, note_id: int, label_ids: Iterable[int]) -> None:
+        joined_label_ids = ', '.join(map(str, label_ids))
+        self.db.delete('relation', where=f"note_id={note_id} and label_id in ({joined_label_ids})")
+
     def get_labels(self, note_id: int) -> Iterable[Label]:
         rows = self.db.select('notes', ('labels.name', 'labels.id'),
                               joins=(('relation', 'notes.id=note_id'), ('labels', 'labels.id=label_id')),
