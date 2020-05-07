@@ -13,21 +13,20 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.resize(1024, 600)
-        self.controller = Controller()
 
-        self.notes_widget = NoteWidget(parent=self)
+        self.controller = Controller()
+        self.notesWidget = NoteWidget(parent=self)
 
         self.init_ui()
 
+        self.setWindowTitle('NOTE TAKING APP')
         self.update_labels()
-
-        self.note_btn = {}
 
     def init_ui(self):
         self.ui.setupUi(self)
         self.resize(1024, 600)
 
-        self.ui.horizontalLayout.addWidget(self.notes_widget)
+        self.ui.horizontalLayout.addWidget(self.notesWidget)
         self.ui.horizontalLayout.setStretch(0, 2)
         self.ui.horizontalLayout.setStretch(1, 3)
         self.ui.horizontalLayout.setStretch(2, 8)
@@ -35,8 +34,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.newLabelBtn.clicked.connect(self.create_label)
         self.ui.labelsListWidget.itemDoubleClicked.connect(self.label_clicked)
         self.ui.deleteLabelBtn.clicked.connect(self.delete_label)
-        self.notes_widget.note_created.connect(self.create_note)
-        self.notes_widget.note_saved.connect(self.save_note)
+        self.notesWidget.note_created.connect(self.create_note)
+        self.notesWidget.note_saved.connect(self.save_note)
 
     def update_labels(self) -> None:
         labels = self.controller.get_labels()
@@ -67,8 +66,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_labels()
 
     def create_note(self):
-        note = self.controller.save_note(Note(name="untiled", content=""))
-        self.notes_widget.set_note(note)
+        note = self.controller.save_note(Note(name="untitled", content=""))
+        self.notesWidget.set_note(note)
 
     def save_note(self, note: Note):
         self.controller.save_note(note)
