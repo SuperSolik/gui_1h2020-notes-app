@@ -15,6 +15,7 @@ class NoteState(Enum):
 class NoteWidget(QWidget):
     note_created = pyqtSignal()
     note_saved = pyqtSignal(Note)
+    note_deleted = pyqtSignal(Note)
 
     def __init__(self, parent=None):
         super(QWidget, self).__init__(parent)
@@ -45,6 +46,7 @@ class NoteWidget(QWidget):
         self.ui.noteContent.addWidget(self.textEdit)
 
         self.ui.newNoteBtn.clicked.connect(lambda: self.note_created.emit())
+        self.ui.deteleBtn.clicked.connect(lambda: self.note_deleted.emit(self.note) if self.note else None)
         self.ui.saveBtn.clicked.connect(self.save_note)
 
     def _change_state(self, num_state: int):

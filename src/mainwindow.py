@@ -34,8 +34,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.newLabelBtn.clicked.connect(self.create_label)
         self.ui.labelsListWidget.itemDoubleClicked.connect(self.label_clicked)
         self.ui.deleteLabelBtn.clicked.connect(self.delete_label)
+
         self.notesWidget.note_created.connect(self.create_note)
         self.notesWidget.note_saved.connect(self.save_note)
+        self.notesWidget.note_deleted.connect(self.delete_note)
 
     def update_labels(self) -> None:
         labels = self.controller.get_labels()
@@ -71,6 +73,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_note(self, note: Note):
         self.controller.save_note(note)
+
+    def delete_note(self, note: Note):
+        self.controller.delete_note(note.id)
 
     def label_clicked(self, item: QListWidgetItem) -> None:
         # self.ui.notesLabel.setText(item.text())
