@@ -5,7 +5,7 @@ from functools import partial
 from src.controller.models.model import Model
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Label:
     name: str
     id: int = None

@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QListWidgetItem, QInputDialog
 
@@ -7,7 +9,6 @@ from src.controller.models.notemodel import Note
 from src.notepreview import NotePreviewWidget
 from src.notewidget import NoteWidget
 from src.ui.mainwindow_ui import Ui_MainWindow
-from typing import Tuple
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -21,6 +22,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.cur_label_id = None
         self.cur_note = None
+        self.labels = None
+        self.active_labels = None
 
         self.init_ui()
 
@@ -46,14 +49,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.notesWidget.note_deleted.connect(self.delete_note)
 
     def update_labels(self) -> None:
-        labels = self.controller.get_labels()
-        active_labels = ()
-        if self.cur_note is not None:
-            active_labels = self.controller.get_labels_for_note(self.cur_note.id)
+        self.labels = self.controller.get_labels()
 
-        self.notesWidget.update_labels(labels, active_labels)
-        # applied_labels = self.controller.get_labels_for_note(self.cur_note)
-        # self.notesWidget.update_labels(labels, self.)
+        self.active_labels = ()
+        if self.cur_note is not None:
+            self.active_labels = self.controller.get_labels_for_note(self.cur_note.id)
+
+        self.notesWidget.update_labels(self.labels, self.active_labels)
 
         self.ui.labelsListWidget.clear()
         # first fake label, by clicking on it just fetch all notes
@@ -61,7 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
         setattr(item, 'id', None)
         self.ui.labelsListWidget.addItem(item)
 
-        for label in labels:
+        for label in self.labels:
             item = QListWidgetItem(f'{label.name}')
             setattr(item, 'id', label.id)
             self.ui.labelsListWidget.addItem(item)
@@ -74,9 +76,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_labels()
 
     def delete_label(self):
-        labels = self.controller.get_labels()
-        text, ok = QInputDialog.getItem(None, 'Delete label', 'Select label', (label.name for label in labels))
-        label_to_del = next((label for label in labels if text in label.name), None)
+        text, ok = QInputDialog.getItem(None, 'Delete label', 'Select label', (label.name for label in self.labels))
+        label_to_del = next((label for label in self.labels if text in label.name), None)
         if ok and label_to_del is not None:
             self.controller.delete_label(label_to_del.id)
 
@@ -93,12 +94,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cur_note.name = note.name
         self.cur_note.content = note.content
 
-        # old_related_labels = self.controller.get_labels_for_note(self.cur_note.id)
-        # labels = self.controller.get_labels()
-        # new_related_labels = (label for label in labels if label.name in checked_labels_names)
-        #
-        # added_labels = set(new_related_labels).symmetric_difference(set(old_related_labels))
-        # deleted_labels = set(old_related_labels).symmetric_difference(set(new_related_labels))
+        old_related_labels = self.controller.get_labels_for_note(self.cur_note.id)
+
+        new_related_labels = (label for label in self.labels if label.name in checked_labels_names)
+
+        added_labels = set(new_related_labels).symmetric_difference(set(old_related_labels))
+        deleted_labels = set(old_related_labels).symmetric_difference(set(new_related_labels))
+
+        added_labels = tuple(map(lambda l: l.id, added_labels))
+        deleted_labels = tuple(map(lambda l: l.id, deleted_labels))
+
+        self.controller.add_labels_to_note(self.cur_note.id, added_labels)
+        self.controller.delete_labels_from_note(self.cur_note.id, deleted_labels)
 
         self.controller.save_note(self.cur_note)
         self.fetch_notes(self.cur_label_id)
@@ -129,4 +136,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setup_note(self, note: Note):
         self.cur_note = note
+        self.active_labels = self.controller.get_labels_for_note(self.cur_note.id)
         self.notesWidget.set_note(self.cur_note)
+        self.notesWidget.update_labels(self.labels, self.active_labels)

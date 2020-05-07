@@ -17,7 +17,7 @@ class NoteState(Enum):
 
 class NoteWidget(QWidget):
     note_created = pyqtSignal()
-    note_saved = pyqtSignal(Note)
+    note_saved = pyqtSignal(tuple)
     note_deleted = pyqtSignal(Note)
 
     def __init__(self, parent=None):
