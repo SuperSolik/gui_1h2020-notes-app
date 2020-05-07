@@ -12,8 +12,10 @@ class NotePreviewWidget(QFrame):
         super(QWidget, self).__init__(parent=parent)
         self.setLayout(QVBoxLayout())
         self.note = note
+
         label = QLabel(note.name)
         label.setFrameStyle(QFrame.StyledPanel)
+
         self.layout().addWidget(label)
 
     def mouseDoubleClickEvent(self, e: QtGui.QMouseEvent):

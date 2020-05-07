@@ -7,6 +7,7 @@ from src.controller.models.notemodel import Note
 from src.notepreview import NotePreviewWidget
 from src.notewidget import NoteWidget
 from src.ui.mainwindow_ui import Ui_MainWindow
+from typing import Tuple
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -17,7 +18,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.controller = Controller()
         self.notesWidget = NoteWidget(parent=self)
+
         self.cur_label_id = None
+        self.cur_note = None
 
         self.init_ui()
 
@@ -44,6 +47,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_labels(self) -> None:
         labels = self.controller.get_labels()
+        active_labels = ()
+        if self.cur_note is not None:
+            active_labels = self.controller.get_labels_for_note(self.cur_note.id)
+
+        self.notesWidget.update_labels(labels, active_labels)
+        # applied_labels = self.controller.get_labels_for_note(self.cur_note)
+        # self.notesWidget.update_labels(labels, self.)
+
         self.ui.labelsListWidget.clear()
         # first fake label, by clicking on it just fetch all notes
         item = QListWidgetItem("All notes")
@@ -59,6 +70,7 @@ class MainWindow(QtWidgets.QMainWindow):
         text, ok = QInputDialog.getText(None, 'Dialog', 'Input label name:')
         if ok:
             self.controller.save_label(Label(text))
+
         self.update_labels()
 
     def delete_label(self):
@@ -71,15 +83,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_labels()
 
     def create_note(self):
-        note = self.controller.save_note(Note(name="untitled", content=""))
-        self.notesWidget.set_note(note)
+        self.cur_note = self.controller.save_note(Note(name="untitled", content=""))
+        self.notesWidget.set_note(self.cur_note)
         self.fetch_notes(self.cur_label_id)
 
-    def save_note(self, note: Note):
-        self.controller.save_note(note)
+    def save_note(self, note_data: Tuple):
+        note, checked_labels_names = note_data
+
+        self.cur_note.name = note.name
+        self.cur_note.content = note.content
+
+        # old_related_labels = self.controller.get_labels_for_note(self.cur_note.id)
+        # labels = self.controller.get_labels()
+        # new_related_labels = (label for label in labels if label.name in checked_labels_names)
+        #
+        # added_labels = set(new_related_labels).symmetric_difference(set(old_related_labels))
+        # deleted_labels = set(old_related_labels).symmetric_difference(set(new_related_labels))
+
+        self.controller.save_note(self.cur_note)
         self.fetch_notes(self.cur_label_id)
 
     def delete_note(self, note: Note):
+        self.cur_note.name = note.name
+        self.cur_note.content = note.content
+
         self.controller.delete_note(note.id)
         self.fetch_notes(self.cur_label_id)
 
@@ -89,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for note in notes:
             note_preview = NotePreviewWidget(note, self)
 
-            note_preview.note_passed.connect(self.notesWidget.set_note)
+            note_preview.note_passed.connect(self.setup_note)
 
             item = QListWidgetItem()
             item.setSizeHint(note_preview.minimumSizeHint())
@@ -99,3 +126,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def label_clicked(self, label_item: QListWidgetItem) -> None:
         self.cur_label_id = label_item.id
         self.fetch_notes(self.cur_label_id)
+
+    def setup_note(self, note: Note):
+        self.cur_note = note
+        self.notesWidget.set_note(self.cur_note)

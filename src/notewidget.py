@@ -1,8 +1,11 @@
 from enum import Enum
+from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QTextBrowser
+from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QTextBrowser, QSpacerItem
 
+from src.checkable_combobox import CheckableComboBox
+from src.controller.models.labelmodel import Label
 from src.controller.models.notemodel import Note
 from src.ui.notewidget_ui import Ui_NoteWidget
 
@@ -23,6 +26,7 @@ class NoteWidget(QWidget):
 
         self.textBrowser = QTextBrowser(self)
         self.textEdit = QTextEdit(self)
+        self.labels_box = CheckableComboBox(self)
 
         self.state = NoteState.RENDER
         self.note = None
@@ -36,6 +40,12 @@ class NoteWidget(QWidget):
         edit_btn.clicked.connect(self.edit_note)
         render_btn = QPushButton('Render')
         render_btn.clicked.connect(self.render_note)
+
+        self.ui.horizontalLayout_2.addWidget(self.labels_box)
+        self.ui.horizontalLayout_2.addItem(QSpacerItem(10, 10))
+        self.ui.horizontalLayout_2.setStretch(0, 0)
+        self.ui.horizontalLayout_2.setStretch(1, 3)
+        self.ui.horizontalLayout_2.setStretch(2, 8)
 
         self.ui.titleEdit.setPlaceholderText('Input title')
 
@@ -75,4 +85,10 @@ class NoteWidget(QWidget):
         if self.note is not None:
             self.note.name = self.ui.titleEdit.text().strip()
             self.note.content = self.textEdit.toMarkdown().strip()
-            self.note_saved.emit(self.note)
+            self.note_saved.emit((self.note, self.labels_box.currentData()))
+
+    def update_labels(self, labels: Tuple[Label], active_labels: Tuple[Label]):
+        self.labels_box.clear()
+        for label in labels:
+            checked = label in active_labels
+            self.labels_box.addItem(label.name, None, checked)
