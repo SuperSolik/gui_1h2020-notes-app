@@ -35,5 +35,8 @@ class Controller:
     def add_labels_to_note(self, note_id: int, label_ids: Iterable[int]) -> None:
         self.notes.add_labels(note_id, label_ids)
 
+    def delete_labels_from_note(self, note_id: int, label_ids: Iterable[int]) -> None:
+        self.notes.delete_labels(note_id, label_ids)
+
     def get_labels_for_note(self, note_id) -> Tuple[Label]:
         return tuple(self.notes.get_labels(note_id))

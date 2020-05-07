@@ -70,9 +70,8 @@ class Database(metaclass=SingletonMeta):
         rows = self.cursor.fetchall()
         return Database.rows_to_dict(columns, rows)
 
-    def delete(self, table: str, row_id: int) -> None:
-        row_id = int(row_id)
-        self.cursor.execute(f"delete from {table} where id={row_id}")
+    def delete(self, table: str, where: str) -> None:
+        self.cursor.execute(f"delete from {table} where {where}")
         self.conn.commit()
 
     def check_connection(self) -> None:
