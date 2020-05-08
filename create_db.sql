@@ -5,7 +5,7 @@ create table if not exists labels(
 
 create table if not exists notes(
     id integer primary key,
-    name varchar(255) unique,
+    name varchar(255),
     content text,
     date timestamp default current_timestamp
 );
