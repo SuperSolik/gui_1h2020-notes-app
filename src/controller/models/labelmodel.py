@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from functools import partial
+from functools import partial, lru_cache
 from typing import Tuple
 
 from src.controller.models.model import Model
@@ -14,24 +14,20 @@ class Label:
 class LabelModel(Model):
     def __init__(self):
         super().__init__()
-        self.labels = None
 
+    @lru_cache(maxsize=1)
     def get(self) -> Tuple[Label]:
-        if self.labels is None:
-            self._update()
-        return self.labels
+        dict_labels = self.db.select('labels', ('id', 'name'))
+        return tuple(Label(**label) for label in dict_labels)
 
     def save(self, label: Label) -> Label:
         action = partial(self.db.update, 'labels', label.id) if label.id else partial(self.db.insert, 'labels')
         label = Label(name=label.name,
                       id=action({'name': label.name}))
-        self._update()
+        self.get.cache_clear()
         return label
 
     def delete(self, id: int) -> None:
         self.db.delete('labels', where=f'id={id}')
-        self._update()
+        self.get.cache_clear()
 
-    def _update(self):
-        dict_labels = self.db.select('labels', ('id', 'name'))
-        self.labels = tuple(map(lambda label: Label(**label), dict_labels))

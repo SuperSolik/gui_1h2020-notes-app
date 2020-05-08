@@ -13,7 +13,7 @@ class Controller:
 
     # labels
     def get_labels(self) -> Tuple[Label]:
-        return tuple(self.labels.get())
+        return self.labels.get()
 
     def save_label(self, label: Label = None) -> Label:
         return self.labels.save(label)

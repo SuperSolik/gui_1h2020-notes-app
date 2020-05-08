@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 from itertools import cycle
-from typing import Iterable, Dict, cast as typecast
+from typing import Tuple, Dict, cast as typecast, Iterable
 
 from src.controller.models.labelmodel import Label
 from src.controller.models.model import Model
@@ -28,12 +28,12 @@ class NoteModel(Model):
     def __init__(self):
         super().__init__()
 
-    def get(self, label_id: int = None) -> Iterable[Note]:
+    def get(self, label_id: int = None) -> Tuple[Note]:
         dict_notes = self.db.select(
             'notes', ('notes.name', 'notes.content', 'notes.date', 'notes.id'),
             joins=(('relation', 'notes.id=note_id'), ('labels', 'labels.id=label_id')) if label_id else [],
             where=f'labels.id={label_id}' if label_id else None)
-        return map(Note.from_dict_note, dict_notes)
+        return tuple(map(Note.from_dict_note, dict_notes))
 
     def save(self, note: Note) -> Note:
         action = partial(self.db.update, 'notes', note.id) if note.id else partial(self.db.insert, 'notes')
