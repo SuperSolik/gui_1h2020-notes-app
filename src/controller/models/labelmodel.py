@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import partial, lru_cache
-from typing import Iterable
+from typing import Tuple
 
 from src.controller.models.model import Model
 
@@ -16,9 +16,9 @@ class LabelModel(Model):
         super().__init__()
 
     @lru_cache(maxsize=1)
-    def get(self) -> Iterable[Label]:
+    def get(self) -> Tuple[Label]:
         dict_labels = self.db.select('labels', ('id', 'name'))
-        return map(lambda label: Label(**label), dict_labels)
+        return tuple(Label(**label) for label in dict_labels)
 
     def save(self, label: Label) -> Label:
         action = partial(self.db.update, 'labels', label.id) if label.id else partial(self.db.insert, 'labels')
