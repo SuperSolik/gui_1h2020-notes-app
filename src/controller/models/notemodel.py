@@ -48,7 +48,7 @@ class NoteModel(Model):
                     }))
 
     def delete(self, id: int) -> None:
-        self.db.delete('notes', id)
+        self.db.delete('notes', where=f'id={id}')
 
     # labels
     def add_labels(self, note_id: int, label_ids: Iterable[int]) -> None:

@@ -25,4 +25,4 @@ class LabelModel(Model):
                      id=action({'name': label.name}))
 
     def delete(self, id: int) -> None:
-        self.db.delete('labels', id)
+        self.db.delete('labels', where=f'id={id}')
