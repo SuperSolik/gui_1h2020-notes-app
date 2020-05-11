@@ -37,7 +37,6 @@ class NoteModel(Model):
 
     def save(self, note: Note) -> Note:
         action = partial(self.db.update, 'notes', note.id) if note.id else partial(self.db.insert, 'notes')
-        print(action)
         now = datetime.now()
         return Note(name=note.name,
                     content=note.content,
