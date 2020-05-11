@@ -61,6 +61,9 @@ class NoteWidget(QWidget):
 
         self.ui.saveBtn.clicked.connect(self.save_data)
 
+    def is_set(self):
+        self.has_content
+
     def _change_state(self, num_state: int):
         self.ui.modeBtns.setCurrentIndex(num_state)
         self.ui.noteContent.setCurrentIndex(num_state)
@@ -85,16 +88,16 @@ class NoteWidget(QWidget):
         self.render_data()
 
     def save_data(self):
-        if self.has_content:
-            name = self.ui.titleEdit.text().strip()
-            content = self.textEdit.toMarkdown().strip()
-            labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
-            data = {
-                'name': name,
-                'content': content,
-                'labels': labels
-            }
-            self.note_data_saved.emit(data)
+        # if self.has_content:
+        name = self.ui.titleEdit.text().strip()
+        content = self.textEdit.toMarkdown().strip()
+        labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
+        data = {
+            'name': name,
+            'content': content,
+            'labels': labels
+        }
+        self.note_data_saved.emit(data)
 
     def delete_data(self):
         self.textEdit.setMarkdown('')

@@ -89,23 +89,23 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_note(self, note_data: Dict):
         name, content, new_labels_id = note_data.values()
+        note_to_save = Note(name=name, content=content)
+        if self.cur_note is not None:
+            note_to_save.id = self.cur_note.id
+        self.cur_note = self.controller.save_note(note_to_save)
 
-        self.cur_note.name = name
-        self.cur_note.content = content
         old_labels = self.controller.get_labels_for_note(self.cur_note.id)
-
         old_labels_id = map(lambda l: l.id, old_labels)
-
         self.controller.delete_labels_from_note(self.cur_note.id, old_labels_id)
         self.controller.add_labels_to_note(self.cur_note.id, new_labels_id)
 
-        self.controller.save_note(self.cur_note)
         self.fetch_notes(self.cur_label_id)
 
     def delete_note(self):
-        self.controller.delete_note(self.cur_note.id)
-        self.cur_note = None
-        self.fetch_notes(self.cur_label_id)
+        if self.cur_note is not None:
+            self.controller.delete_note(self.cur_note.id)
+            self.cur_note = None
+            self.fetch_notes(self.cur_label_id)
 
     def fetch_notes(self, label_id=None):
         notes = self.controller.get_notes(label_id)
