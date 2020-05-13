@@ -1,15 +1,15 @@
-FROM ubuntu:18.04
+FROM python:3.8
 
-WORKDIR /app
+WORKDIR app
 
-RUN apt-get update && apt-get install -y python3.8 python3-pip python3-pyqt5 sqlite3
-RUN python3.8 -m pip install --upgrade pip setuptools
-RUN python3.8 -m pip install PyQt5
+RUN apt-get update && apt-get install -y python3-pyqt5 sqlite3
+RUN pip install --upgrade pip setuptools PyQt5
 
-COPY src/ ./
-COPY main.py ./
-COPY create_db.sql ./
+RUN mkdir db
+COPY src ./src
+COPY *.py ./
+COPY *.sql ./
 
-ENV DEV_NOTE_DB=/app/database.db
-RUN sqlite3 database.db < create_db.sql
-ENTRYPOINT python3.8 main.py
+ENV DEV_NOTE_DB /app/db/database.db
+RUN sqlite3 /app/db/database.db < create_db.sql
+ENTRYPOINT ["python", "main.py"]
