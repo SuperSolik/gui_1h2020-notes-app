@@ -17,9 +17,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
-	background-color: rgb(85, 170, 0);
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,3">
@@ -62,9 +60,7 @@
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton#newLabelBtn {
-	background: red;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>New label</string>
@@ -124,7 +120,7 @@
        <item>
         <widget class="QPushButton" name="deleteLabelBtn">
          <property name="styleSheet">
-          <string notr="true">background</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Delete label</string>
