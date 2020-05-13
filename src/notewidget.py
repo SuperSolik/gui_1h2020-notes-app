@@ -1,8 +1,10 @@
 from enum import Enum
 from typing import Tuple
 
+import markdown2
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QTextBrowser, QSpacerItem
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QSpacerItem
 
 from src.checkable_combobox import CheckableComboBox
 from src.controller.models.labelmodel import Label
@@ -23,7 +25,8 @@ class NoteWidget(QWidget):
         super(QWidget, self).__init__(parent)
         self.ui = Ui_NoteWidget()
 
-        self.textBrowser = QTextBrowser(self)
+        self.textBrowser = QWebEngineView(self)
+
         self.textEdit = QTextEdit(self)
         self.labels_box = CheckableComboBox(self)
 
@@ -73,21 +76,22 @@ class NoteWidget(QWidget):
     def render_data(self):
         self.state = NoteState.RENDER
         self.ui.titleEdit.setDisabled(True)
-        text = self.textEdit.toMarkdown()
-        self.textBrowser.setMarkdown(text)
+        text = self.textEdit.toPlainText()
+        html = markdown2.markdown(text, ..., extras=['tables', 'task_list', 'cuddled-lists', 'code-friendly'])
+        self.textBrowser.setHtml(html)
         self._change_state(self.state.value)
 
     def set_data(self, name: str, content: str):
         self.has_content = True
         self.ui.titleEdit.setText(name)
-        self.textEdit.setMarkdown(content)
+        self.textEdit.setPlainText(content)
         self.labels_box.clear()
         self.render_data()
 
     def save_data(self):
         if self.has_content:
             name = self.ui.titleEdit.text().strip()
-            content = self.textEdit.toMarkdown().strip()
+            content = self.textEdit.toPlainText()
             labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
             data = {
                 'name': name,
