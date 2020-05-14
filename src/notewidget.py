@@ -35,7 +35,7 @@ class NoteWidget(QWidget):
         self.labels_ids_map = {}
 
         self.init_ui()
-        self.render_data()
+        self.edit_data()
 
     def init_ui(self):
         self.ui.setupUi(self)
@@ -89,16 +89,15 @@ class NoteWidget(QWidget):
         self.render_data()
 
     def save_data(self):
-        if self.has_content:
-            name = self.ui.titleEdit.text().strip()
-            content = self.textEdit.toPlainText()
-            labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
-            data = {
-                'name': name,
-                'content': content,
-                'labels': labels
-            }
-            self.note_data_saved.emit(data)
+        name = self.ui.titleEdit.text().strip()
+        content = self.textEdit.toPlainText()
+        labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
+        data = {
+            'name': name,
+            'content': content,
+            'labels': labels
+        }
+        self.note_data_saved.emit(data)
 
     def delete_data(self):
         self.textEdit.setMarkdown('')
