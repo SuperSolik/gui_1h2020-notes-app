@@ -35,7 +35,7 @@ class NoteWidget(QWidget):
         self.labels_ids_map = {}
 
         self.init_ui()
-        self.render_data()
+        self.edit_data()
 
     def init_ui(self):
         self.ui.setupUi(self)
@@ -64,9 +64,6 @@ class NoteWidget(QWidget):
 
         self.ui.saveBtn.clicked.connect(self.save_data)
 
-    def is_set(self):
-        self.has_content
-
     def _change_state(self, num_state: int):
         self.ui.modeBtns.setCurrentIndex(num_state)
         self.ui.noteContent.setCurrentIndex(num_state)
@@ -89,10 +86,9 @@ class NoteWidget(QWidget):
         self.ui.titleEdit.setText(name)
         self.textEdit.setPlainText(content)
         self.labels_box.clear()
-        self.edit_data()
+        self.render_data()
 
     def save_data(self):
-        # if self.has_content:
         name = self.ui.titleEdit.text().strip()
         content = self.textEdit.toPlainText()
         labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
