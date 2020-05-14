@@ -49,17 +49,18 @@ class Database(metaclass=SingletonMeta):
             values)
         self.conn.commit()
 
-    def update(self, table: str, row_id: int, column_values: Dict) -> None:
+    def update(self, table: str, row_id: int, column_values: Dict) -> int:
         row_id = int(row_id)
         raw_placeholders = map(lambda col: f"{col} = ?", column_values.keys())
         placeholders = ', '.join(raw_placeholders)
-        values = [tuple(column_values.values())]
-        self.cursor.executemany(
+        self.cursor.execute(
             f"update {table} set "
             f"{placeholders} "
             f"where id={row_id}",
-            values)
+            list(column_values.values()))
         self.conn.commit()
+
+        return row_id
 
     def select(self, table: str, columns: Iterable[str], **kwargs) -> List[Dict[str, Any]]:
         columns_joined = ', '.join(columns)
