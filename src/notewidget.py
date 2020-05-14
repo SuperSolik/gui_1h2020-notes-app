@@ -89,7 +89,7 @@ class NoteWidget(QWidget):
         self.ui.titleEdit.setText(name)
         self.textEdit.setPlainText(content)
         self.labels_box.clear()
-        self.render_data()
+        self.edit_data()
 
     def save_data(self):
         # if self.has_content:
