@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,3">
     <property name="spacing">
@@ -50,6 +56,12 @@
        </property>
        <item>
         <widget class="QPushButton" name="newLabelBtn">
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>New label</string>
          </property>
@@ -107,6 +119,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="deleteLabelBtn">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>Delete label</string>
          </property>
