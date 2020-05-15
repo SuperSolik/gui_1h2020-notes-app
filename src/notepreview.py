@@ -18,6 +18,9 @@ class NotePreviewWidget(QFrame):
 
         self.layout().addWidget(label)
 
+    def getNote(self):
+        return self.note
+
     def mouseDoubleClickEvent(self, e: QtGui.QMouseEvent):
         self.note_passed.emit(self.note)
         e.accept()

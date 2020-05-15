@@ -41,6 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.newLabelBtn.clicked.connect(self.create_label)
         self.ui.labelsListWidget.itemDoubleClicked.connect(self.label_clicked)
         self.ui.deleteLabelBtn.clicked.connect(self.delete_label)
+        self.ui.searchBtn.clicked.connect(self.search_notes)
 
         self.notesWidget.note_created.connect(self.create_note)
         self.notesWidget.note_deleted.connect(self.delete_note)
@@ -130,3 +131,13 @@ class MainWindow(QtWidgets.QMainWindow):
         note_labels = self.controller.get_labels_for_note(self.cur_note.id)
         self.notesWidget.set_data(name=self.cur_note.name, content=self.cur_note.content)
         self.notesWidget.update_labels(labels, note_labels)
+
+    def search_notes(self):
+        text = self.ui.searchEdit.text()
+        for index in range(self.ui.notesListWidget.count()):
+            item = self.ui.notesListWidget.item(index)
+            item.setHidden(True)
+            note_preview = self.ui.notesListWidget.itemWidget(item)
+            note = note_preview.getNote()
+            if text in note.name:
+                item.setHidden(False)
