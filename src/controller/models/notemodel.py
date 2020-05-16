@@ -62,4 +62,4 @@ class NoteModel(Model):
         rows = self.db.select('notes', ('labels.name', 'labels.id'),
                               joins=(('relation', 'notes.id=note_id'), ('labels', 'labels.id=label_id')),
                               where=f'notes.id={note_id}')
-        return map(lambda row: Label(*row.values()), rows)
+        return tuple(Label(*row.values()) for row in rows)
