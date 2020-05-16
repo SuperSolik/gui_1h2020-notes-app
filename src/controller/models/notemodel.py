@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from functools import partial, lru_cache
+from functools import partial
 from itertools import cycle
 from typing import Tuple, Dict, cast as typecast, Iterable
 
@@ -28,7 +28,6 @@ class NoteModel(Model):
     def __init__(self):
         super().__init__()
 
-    @lru_cache(maxsize=1)
     def get(self, label_id: int = None) -> Tuple[Note]:
         dict_notes = self.db.select(
             'notes', ('notes.name', 'notes.content', 'notes.date', 'notes.id'),
@@ -59,7 +58,6 @@ class NoteModel(Model):
         joined_label_ids = ', '.join(map(str, label_ids))
         self.db.delete('relation', where=f"note_id={note_id} and label_id in ({joined_label_ids})")
 
-    @lru_cache(maxsize=1)
     def get_labels(self, note_id: int) -> Iterable[Label]:
         rows = self.db.select('notes', ('labels.name', 'labels.id'),
                               joins=(('relation', 'notes.id=note_id'), ('labels', 'labels.id=label_id')),
