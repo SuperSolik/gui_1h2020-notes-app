@@ -3,8 +3,9 @@ from typing import Tuple
 
 import markdown2
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QFont
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QSpacerItem
+from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QSpacerItem, QFrame, QLineEdit, QVBoxLayout
 
 from src.checkable_combobox import CheckableComboBox
 from src.controller.models.labelmodel import Label
@@ -27,7 +28,16 @@ class NoteWidget(QWidget):
 
         self.textBrowser = QWebEngineView(self)
 
+        self.titleEdit = QLineEdit(self)
+        self.titleEdit.setFont(QFont('Ubuntu', 16, QFont.Bold))
+        self.titleEdit.setFrame(False)
+        self.titleEdit.setPlaceholderText('Input title')
+
         self.textEdit = QTextEdit(self)
+        self.textEdit.setFont(QFont('Ubuntu', 14))
+        self.textEdit.setFrameStyle(QFrame.NoFrame)
+        self.textEdit.setPlaceholderText('Fill content')
+
         self.labels_box = CheckableComboBox(self)
 
         self.state = NoteState.RENDER
@@ -40,6 +50,15 @@ class NoteWidget(QWidget):
     def init_ui(self):
         self.ui.setupUi(self)
 
+        editWidget = QWidget()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        editWidget.setLayout(layout)
+
+        editWidget.layout().addWidget(self.titleEdit)
+        editWidget.layout().addWidget(self.textEdit)
+
         edit_btn = QPushButton('Edit')
         edit_btn.clicked.connect(self.edit_data)
         render_btn = QPushButton('Render')
@@ -51,13 +70,11 @@ class NoteWidget(QWidget):
         self.ui.horizontalLayout_2.setStretch(1, 3)
         self.ui.horizontalLayout_2.setStretch(2, 8)
 
-        self.ui.titleEdit.setPlaceholderText('Input title')
-
         self.ui.modeBtns.addWidget(edit_btn)
         self.ui.modeBtns.addWidget(render_btn)
 
         self.ui.noteContent.addWidget(self.textBrowser)
-        self.ui.noteContent.addWidget(self.textEdit)
+        self.ui.noteContent.addWidget(editWidget)
 
         self.ui.newNoteBtn.clicked.connect(lambda: self.note_created.emit())
         self.ui.deteleBtn.clicked.connect(self.delete_data)
@@ -70,26 +87,29 @@ class NoteWidget(QWidget):
 
     def edit_data(self):
         self.state = NoteState.EDIT
-        self.ui.titleEdit.setEnabled(True)
         self._change_state(self.state.value)
 
     def render_data(self):
         self.state = NoteState.RENDER
-        self.ui.titleEdit.setDisabled(True)
-        text = self.textEdit.toPlainText()
+        title = self.titleEdit.text()
+
+        title = f'# {title}'
+        content = self.textEdit.toPlainText()
+        text = '  \n'.join((title, content))
+
         html = markdown2.markdown(text, ..., extras=['tables', 'task_list', 'cuddled-lists', 'code-friendly'])
         self.textBrowser.setHtml(html)
         self._change_state(self.state.value)
 
     def set_data(self, name: str, content: str):
         self.has_content = True
-        self.ui.titleEdit.setText(name)
+        self.titleEdit.setText(name)
         self.textEdit.setPlainText(content)
         self.labels_box.clear()
         self.render_data()
 
     def save_data(self):
-        name = self.ui.titleEdit.text().strip()
+        name = self.titleEdit.text().strip()
         content = self.textEdit.toPlainText()
         labels = map(lambda label: self.labels_ids_map[label], self.labels_box.currentData())
         data = {
@@ -101,7 +121,7 @@ class NoteWidget(QWidget):
 
     def delete_data(self):
         self.textEdit.setMarkdown('')
-        self.ui.titleEdit.setText('')
+        self.titleEdit.setText('')
         self.note_deleted.emit()
         self.render_data()
         self.has_content = False
