@@ -14,6 +14,9 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,1,1">
      <property name="spacing">
@@ -26,7 +29,7 @@
       <number>0</number>
      </property>
      <property name="bottomMargin">
-      <number>5</number>
+      <number>10</number>
      </property>
      <item>
       <widget class="QPushButton" name="newNoteBtn">
@@ -84,6 +87,9 @@
      <property name="spacing">
       <number>3</number>
      </property>
+     <property name="topMargin">
+      <number>10</number>
+     </property>
      <property name="bottomMargin">
       <number>15</number>
      </property>
@@ -95,9 +101,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="titleEdit"/>
    </item>
    <item>
     <widget class="QStackedWidget" name="noteContent">
