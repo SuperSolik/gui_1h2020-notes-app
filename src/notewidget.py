@@ -2,8 +2,8 @@ from enum import Enum
 from typing import Tuple
 
 import markdown2
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtGui import QFont, QCursor
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QSpacerItem, QFrame, QLineEdit, QVBoxLayout
 
@@ -60,8 +60,10 @@ class NoteWidget(QWidget):
         editWidget.layout().addWidget(self.textEdit)
 
         edit_btn = QPushButton('Edit')
+        edit_btn.setCursor(Qt.PointingHandCursor)
         edit_btn.clicked.connect(self.edit_data)
         render_btn = QPushButton('Render')
+        render_btn.setCursor(Qt.PointingHandCursor)
         render_btn.clicked.connect(self.render_data)
 
         self.ui.horizontalLayout_2.addWidget(self.labels_box)
