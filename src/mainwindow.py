@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.labelsListWidget.addItem(item)
 
     def create_label(self):
-        text, ok = QInputDialog.getText(None, 'Dialog', 'Input label name:')
+        text, ok = QInputDialog.getText(self, 'Dialog', 'Input label name:')
         if ok:
             self.controller.save_label(Label(text))
 
@@ -75,7 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def delete_label(self):
         labels = self.controller.get_labels()
-        text, ok = QInputDialog.getItem(None, 'Delete label', 'Select label', (label.name for label in labels))
+        text, ok = QInputDialog.getItem(self, 'Delete label', 'Select label', (label.name for label in labels))
         label_to_del = next((label for label in labels if text == label.name), None)
         if ok and label_to_del is not None:
             self.controller.delete_label(label_to_del.id)
