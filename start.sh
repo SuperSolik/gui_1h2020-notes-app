@@ -1,9 +1,18 @@
-NAME="2020_leti_7303_gui_petrov_juskovets_notes_app"
-
-docker build -t $NAME .
-xhost + "local:docker@"
-docker run --rm \
-       -v db:/app/db \
-       -v /tmp/.X11-unix:/tmp/.X11-unix \
-       -e DISPLAY=unix$DISPLAY \
-       $NAME
+if [ ! -d "./env" ] 
+then
+    python3.8 -m venv env
+    . ./env/bin/activate
+    echo "Installing dependencies"
+    pip install -U pip setuptools
+    pip install -r requirements.txt
+    deactivate
+fi
+if [ ! -f "./db/local_notes.db" ]
+then
+    echo "Creating db"
+    sqlite3 ./db/local_notes.db < create_db.sql
+fi
+export DEV_NOTE_DB="./db/local_notes.db"
+. ./env/bin/activate
+echo "Starting app"
+python main.py
